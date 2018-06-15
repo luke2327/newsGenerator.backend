@@ -18,6 +18,7 @@ def result():
 <<<<<<< HEAD
 =======
 	print request.content
+	print 'a'
 	d = datetime.datetime.now()
 	k = str(d.year)+str(d.day)+str(d.hour)+str(d.minute)+str(d.second)
 	f = open(k+'.html', 'w')
