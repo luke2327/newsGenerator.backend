@@ -1,0 +1,100 @@
+fieldset{
+  border: 1px solid silver !important;
+  padding: 2px !important;
+  border-radius: 5px;
+}
+
+label{
+  font-size: 14px;
+}
+
+.fd-2 select, input{
+  height: 25px;
+}
+
+.fd-2 input:not([type="date"]){
+  width: 400px;
+}
+
+.fd-2 input[type="date"]{
+  width:200px;
+  font-size: 1.5rem;
+}
+
+.fd-2 select{
+  width: 60px;
+  font-size: 18px;
+}
+
+.art-f-head{
+  font-size: 20pt;
+  padding: 10px;
+}
+
+.art-f-container{
+  margin-left: 10px;
+  overflow: hidden;
+  width: 936px;
+}
+
+.fd-item{
+  margin: 10px;
+  overflow: hidden;
+  float: left;
+  clear: both;
+  width: 100%;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  border-bottom: 1px solid #ddd;
+  padding-top: 1px;
+  padding-bottom: 5px;
+}
+
+.fd-item div div{
+  display: table-cell;
+}
+.fd-item div{
+  display: table;
+  position: relative;
+  float: none;
+  clear: both;
+  table-layout: fixed;
+}
+.fd-1{
+  padding-right: 20px;
+  width: 140px;
+  min-width: 140px;
+  float: none;
+  display: table-cell;
+}
+
+.fd-2{
+  page-break-after: 0px;
+  float: none;
+  display: table-cell;
+  width: 100%;
+  vertical-align: top;
+}
+
+.fd-1:after{
+  content: "";
+  display: table;
+  clear:both;
+}
+
+.fd-2:after{
+  content: "\0020";
+  display: block;
+  height: 0;
+  clear: both;
+  overflow: hidden;
+  visibility: hidden;
+}
+
+.fd-submit{
+  float: right;
+  width: 80px;
+  margin-bottom: 9px !important;
+  margin-right: 9px !important;
+  font-size: 1.5rem;
+}
