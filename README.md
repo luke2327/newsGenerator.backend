@@ -20,3 +20,46 @@ $ sudo apt-get update
 $ python-pip python-dev nginx
 ```
 
+#### If you are using Python 3, type:
+```
+$ sudo apt-get update
+$ sudo apt-get install python3-pip python3-dev nginx
+```
+
+## Create a Python Virtual Environment
+Next, we'll set up a virtual environment in order to isolate our Flask application from the other Python files on the system.
+
+Start by installing the ```virtualenv``` package using ```pip```.
+
+#### If you are using Python 2, type:
+
+```
+$ sudo pip install virtualenv
+```
+
+#### If you are using Python 3, type:
+
+``` 
+$ sudo pip3 install virtualenv
+```
+Now, we can make a parent directory for our Flask project. Move into the directory after you create it:
+
+```
+$ mkdir ~/myproject
+$ cd ~/myproject
+```
+We can create a virtual environment to store our Flask project's Python requirements by typing:
+
+```
+$ virtualenv myprojectenv
+```
+This will install a local copy of Python and ```pip``` into a directory called ```myprojectenv``` within your project directory.
+
+Before we install applications within the virtual environment, we need to activate it. You can do so by typing:
+
+```
+$ source myprojectenv/bin/activate
+```
+Your prompt will change to indicate that you are now operating within the virtual environment. It will look something like this ```(myprojectenv)user@host:~/myproject$```.
+
+
