@@ -18,27 +18,42 @@ def result():
   result = request.form
   language = result.get('language_cd')
   d = datetime.datetime.now()
-  news_name = str(d.year)+str(d.day)+str(d.hour)+str(d.minute)+str(d.second)
-  object_key = news_name+'.html'
-  path_check = str((os.path.dirname(os.path.realpath(__file__)))).split('/')[-1]
-  if path_check != 'html':
+  news_name = str(d.year) + str(d.day) + str(d.hour) + str(d.minute) + str(d.second)
+  object_key = news_name + '.html'
+  print '[' + str(datetime.datetime.now()).split('.')[0] + '] ' +\
+  'You have successfully entered.'
+  print '[' + str(datetime.datetime.now()).split('.')[0] + '] ' +\
+  '[Defined data] language : ' + language + ', object_key : ' + object_key
+  if str((os.path.dirname(os.path.realpath(__file__)))).split('/')[-1].split('\\')[-1] != 'html':
     os.chdir('html/')
 
   try:
-    f = open(object_key, 'w')
-    f.write(render_template("result.html", result = result).encode('utf-8'))
+    print '[' + str(datetime.datetime.now()).split('.')[0] + '] ' +\
+    'The file save_data will be opened.'
+    save_data = open(object_key, 'w')
+    save_data.write(render_template("result.html", result = result).encode('utf-8'))
 
   except Exception as e:
     logging.error(e)
+    print '[' + str(datetime.datetime.now()).split('.')[0] + '] ' +\
+    'Failed to save result_file.'
     print e
 
+  else:
+    print '[' + str(datetime.datetime.now()).split('.')[0] + '] ' +\
+    'The result_file was successfully saved to html/'
+
   finally:
-    f.close()
+    print '[' + str(datetime.datetime.now()).split('.')[0] + '] ' +\
+    'The file save_data will be closed.'
+    save_data.close()
 
   try:
+    print '[' + str(datetime.datetime.now()).split('.')[0] + '] ' +\
+    'The file s3_data will be opened.'
     data = open(object_key, 'rb')
     if language == 'EN':
-      s3.Bucket(bucket_name).put_object(Key='news/en/'+object_key, Body=data)
+      s3.Bucket(bucket_name).upload_file(object_key, 'news/en/'+object_key)
       s3.ObjectAcl(bucket_name, 'news/en/'+object_key).put(ACL='public-read')
     elif language == 'ID':
       s3.Bucket(bucket_name).put_object(Key='news/id/'+object_key, Body=data)
@@ -58,9 +73,17 @@ def result():
 
   except Exception as e:
     logging.error(e)
+    print '[' + str(datetime.datetime.now()).split('.')[0] + '] ' +\
+    'Upload failed on S3'
     print e
+    
+  else:
+    print '[' + str(datetime.datetime.now()).split('.')[0] + '] ' +\
+    object_key + ' was successfully uploaded to S3.'
 
   finally:
+    print '[' + str(datetime.datetime.now()).split('.')[0] + '] ' +\
+    'The file s3_data will be closed.'
     data.close()
 
   return render_template("result.html", result = result)
