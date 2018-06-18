@@ -9,6 +9,9 @@ s3 = boto3.resource('s3')
 bucket_name = 'rbtest2'
 app = Flask(__name__)
 
+def current_time():
+    return '[' + str(datetime.datetime.now()).split('.')[0] + '] '
+
 @app.route('/')
 def home():
   return render_template('index.html')
@@ -20,37 +23,30 @@ def result():
   d = datetime.datetime.now()
   news_name = str(d.year) + str(d.day) + str(d.hour) + str(d.minute) + str(d.second)
   object_key = news_name + '.html'
-  print '[' + str(datetime.datetime.now()).split('.')[0] + '] ' +\
-  'You have successfully entered.'
-  print '[' + str(datetime.datetime.now()).split('.')[0] + '] ' +\
-  '[Defined data] language : ' + language + ', object_key : ' + object_key
+  print current_time() + 'You have successfully entered.'
+  print current_time() + '[Defined data] language : ' + language + ', object_key : ' + object_key
   if str((os.path.dirname(os.path.realpath(__file__)))).split('/')[-1].split('\\')[-1] != 'html':
     os.chdir('html/')
 
   try:
-    print '[' + str(datetime.datetime.now()).split('.')[0] + '] ' +\
-    'The file save_data will be opened.'
+    print current_time() + 'The file save_data will be opened.'
     save_data = open(object_key, 'w')
     save_data.write(render_template("result.html", result = result).encode('utf-8'))
 
   except Exception as e:
     logging.error(e)
-    print '[' + str(datetime.datetime.now()).split('.')[0] + '] ' +\
-    'Failed to save result_file.'
+    print current_time() + 'Failed to save result_file.'
     print e
 
   else:
-    print '[' + str(datetime.datetime.now()).split('.')[0] + '] ' +\
-    'The result_file was successfully saved to html/'
+    print current_time() + 'The result_file was successfully saved to html/'
 
   finally:
-    print '[' + str(datetime.datetime.now()).split('.')[0] + '] ' +\
-    'The file save_data will be closed.'
+    print current_time() + 'The file save_data will be closed.'
     save_data.close()
 
   try:
-    print '[' + str(datetime.datetime.now()).split('.')[0] + '] ' +\
-    'The file s3_data will be opened.'
+    print current_time() + 'The file s3_data will be opened.'
     data = open(object_key, 'rb')
     if language == 'EN':
       s3.Bucket(bucket_name).upload_file(object_key, 'news/en/'+object_key)
@@ -73,17 +69,14 @@ def result():
 
   except Exception as e:
     logging.error(e)
-    print '[' + str(datetime.datetime.now()).split('.')[0] + '] ' +\
-    'Upload failed on S3'
+    print current_time() + 'Upload failed on S3'
     print e
 
   else:
-    print '[' + str(datetime.datetime.now()).split('.')[0] + '] ' +\
-    object_key + ' was successfully uploaded to S3.'
+    print current_time() + object_key + ' was successfully uploaded to S3.'
 
   finally:
-    print '[' + str(datetime.datetime.now()).split('.')[0] + '] ' +\
-    'The file s3_data will be closed.'
+    print current_time() + 'The file s3_data will be closed.'
     data.close()
 
   return render_template("result.html", result = result)
