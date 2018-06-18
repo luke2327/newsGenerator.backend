@@ -76,7 +76,7 @@ def result():
     print '[' + str(datetime.datetime.now()).split('.')[0] + '] ' +\
     'Upload failed on S3'
     print e
-    
+
   else:
     print '[' + str(datetime.datetime.now()).split('.')[0] + '] ' +\
     object_key + ' was successfully uploaded to S3.'
