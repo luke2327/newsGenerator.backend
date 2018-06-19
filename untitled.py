@@ -49,7 +49,8 @@ def result():
     print current_time() + 'The file s3_data will be opened.'
     data = open(object_key, 'rb')
     if language == 'EN':
-      s3.Bucket(bucket_name).upload_file(object_key, 'news/en/'+object_key)
+      s3.Bucket(bucket_name).put_object(Key='news/en/'+object_key, Body=data)
+      # s3.Bucket(bucket_name).upload_file(object_key, 'news/en/'+object_key)
       s3.ObjectAcl(bucket_name, 'news/en/'+object_key).put(ACL='public-read')
     elif language == 'ID':
       s3.Bucket(bucket_name).put_object(Key='news/id/'+object_key, Body=data)
