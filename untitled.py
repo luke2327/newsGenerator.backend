@@ -19,18 +19,19 @@ def home():
 @app.route('/result',methods = ['POST', 'GET'])
 def result():
   result = request.form
-  language = result.get('language_cd')
+  print result[0]
   d = datetime.datetime.now()
   news_name = str(d.year) + str(d.day) + str(d.hour) + str(d.minute) + str(d.second)
-  object_key = news_name + '.html'
+  object_key = 'news/' + result.get('language_cd').lower() + '/' + news_name + '.html'
+  saving_key = news_name + '.html'
   print current_time() + 'You have successfully entered.'
-  print current_time() + '[Defined data] language : ' + language + ', object_key : ' + object_key
+  print current_time() + '[Defined data] language : ' + result.get('language_cd') + ', object_key : ' + saving_key
   if str((os.path.dirname(os.path.realpath(__file__)))).split('/')[-1].split('\\')[-1] != 'html':
     os.chdir('html/')
 
   try:
     print current_time() + 'The file save_data will be opened.'
-    save_data = open(object_key, 'w')
+    save_data = open(saving_key, 'w')
     save_data.write(render_template("result.html", result = result).encode('utf-8'))
 
   except Exception as e:
@@ -47,26 +48,13 @@ def result():
 
   try:
     print current_time() + 'The file s3_data will be opened.'
-    data = open(object_key, 'rb')
-    if language == 'EN':
-      s3.Bucket(bucket_name).put_object(Key='news/en/'+object_key, Body=data)
-      # s3.Bucket(bucket_name).upload_file(object_key, 'news/en/'+object_key)
-      s3.ObjectAcl(bucket_name, 'news/en/'+object_key).put(ACL='public-read')
-    elif language == 'ID':
-      s3.Bucket(bucket_name).put_object(Key='news/id/'+object_key, Body=data)
-      s3.ObjectAcl(bucket_name, 'news/id/'+object_key).put(ACL='public-read')
-    elif language == 'VI':
-      s3.Bucket(bucket_name).put_object(Key='news/vi/'+object_key, Body=data)
-      s3.ObjectAcl(bucket_name, 'news/vi/'+object_key).put(ACL='public-read')
-    elif language == 'TH':
-      s3.Bucket(bucket_name).put_object(Key='news/th/'+object_key, Body=data)
-      s3.ObjectAcl(bucket_name, 'news/th/'+object_key).put(ACL='public-read')
-    elif language == 'BR':
-      s3.Bucket(bucket_name).put_object(Key='news/br/'+object_key, Body=data)
-      s3.ObjectAcl(bucket_name, 'news/br/'+object_key).put(ACL='public-read')
-    elif language == 'KO':
-      s3.Bucket(bucket_name).put_object(Key='news/ko/'+object_key, Body=data)
-      s3.ObjectAcl(bucket_name, 'news/ko/'+object_key).put(ACL='public-read')
+    data = open(saving_key, 'rb')
+    s3.Bucket(bucket_name).put_object(Key=object_key, Body=data)
+    s3_object = s3.Object(bucket_name, object_key)
+    s3_object.copy_from(CopySource={'Bucket': bucket_name, 'Key': object_key},
+                        MetadataDirective="REPLACE",
+                        ContentType="text/html")
+    s3.ObjectAcl(bucket_name, object_key).put(ACL='public-read')
 
   except Exception as e:
     logging.error(e)
@@ -74,7 +62,7 @@ def result():
     print e
 
   else:
-    print current_time() + object_key + ' was successfully uploaded to S3.'
+    print current_time() + saving_key + ' was successfully uploaded to S3.'
 
   finally:
     print current_time() + 'The file s3_data will be closed.'
@@ -84,4 +72,4 @@ def result():
 
 
 if __name__ == '__main__':
-  app.run(debug=True)
+  app.run(host='0.0.0.0', debug=True)
