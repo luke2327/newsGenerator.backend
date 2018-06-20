@@ -24,7 +24,7 @@
     <div>
       <header class="art-f-head">뉴스 생성</header>
       <div class="art-f-container">
-        <form action="http://14.52.57.191:5000/result" method="post" id="news_create">
+        <form action="http://14.52.57.191:5000/result" method="post" enctype="multipart/form-data" id="news_create">
           <div>
             <fieldset>
               <div class="fd-item">
@@ -49,7 +49,7 @@
               <div class="fd-item">
                 <div>
                   <div class="fd-1"><label for="id_image_link">Image link</label></div>
-                  <div class="fd-2"><input type="text" name="image_link" maxlength="1024" id="id_image_link" required></div>
+                  <div class="fd-2"><input type="file" name="image_link" id="id_image_link" required></div>
                 </div>
               </div>
               <div class="fd-item">

@@ -1,2 +1,5 @@
 html/*.html
+download/*.jpg, *.png, *.jpeg, *.gif
 *.pyc
+*.sock
+*.log

@@ -5,13 +5,24 @@ import datetime
 import os
 import boto3
 import logging
+logging.basicConfig(filename='untitled.log', level=logging.INFO,
+                   format='%(asctime)s - %(levelname)s - %(message)s',
+                   datefmt='%Y-%m-%d %I:%M:%S %p')
+
 
 s3 = boto3.resource('s3')
 bucket_name = 'rbtest2'
 app = Flask(__name__)
 
+UPLOAD_FOLDER = './download'
+ALLOWED_EXTENSIONS = set(['jpeg', 'jpg', 'png', 'gif'])
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 def current_time():
     return '[' + str(datetime.datetime.now()).split('.')[0] + '] '
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 @app.route('/')
 def home():
@@ -20,18 +31,23 @@ def home():
 @app.route('/result' ,methods = ['POST', 'GET'])
 def result():
     result = request.form
+    file_s = request.files['image_link']
+    filename = ''
+    if file_s and allowed_file(file_s.filename):
+        filename = secure_filename(file_s.filename)
+        file_s.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     d = datetime.datetime.now()
     news_name = str(d.year) + str(d.day) + str(d.hour) + str(d.minute) + str(d.second)
-    object_key = 'news/' + result.get('language_cd').lower() + '/' + news_name + '.html'
-    saving_key = news_name + '.html'
+    img_object_key = 'news/' + result.get('language_cd').lower() + '/image/' + filename
+    img_saving_key = 'download/' + filename
+    doc_object_key = 'news/' + result.get('language_cd').lower() + '/' + news_name + '.html'
+    doc_saving_key = 'html/' + news_name + '.html'
     print current_time() + 'You have successfully entered.'
-    print current_time() + '[Defined data] language : ' + result.get('language_cd') + ', object_key : ' + saving_key
-    if str((os.path.dirname(os.path.realpath(__file__)))).split('/')[-1].split('\\')[-1] != 'html':
-        os.chdir('html/')
+    print current_time() + '[Defined data] language : ' + result.get('language_cd') + ', object_key : ' + doc_saving_key
 
     try:
         print current_time() + 'The file save_data will be opened.'
-        save_data = open(saving_key, 'w')
+        save_data = open(doc_saving_key, 'w')
         save_data.write(render_template("result.html", result = result).encode('utf-8'))
 
     except Exception as e:
@@ -48,13 +64,20 @@ def result():
 
     try:
         print current_time() + 'The file s3_data will be opened.'
-        data = open(saving_key, 'rb')
-        s3.Bucket(bucket_name).put_object(Key=object_key, Body=data)
-        s3_object = s3.Object(bucket_name, object_key)
-        s3_object.copy_from(CopySource={'Bucket': bucket_name, 'Key': object_key},
-                            MetadataDirective="REPLACE",
-                            ContentType="text/html")
-        s3.ObjectAcl(bucket_name, object_key).put(ACL='public-read')
+        data_doc = open(doc_saving_key, 'rb')
+        data_img = open(img_saving_key, 'rb')
+        s3.Bucket(bucket_name).put_object(Key=img_object_key, Body=data_img)
+        s3.Bucket(bucket_name).put_object(Key=doc_object_key, Body=data_doc)
+        s3.Object(bucket_name, doc_object_key)\
+            .copy_from(CopySource={'Bucket': bucket_name, 'Key': doc_object_key},
+                        MetadataDirective="REPLACE",
+                        ContentType="text/html")
+        s3.Object(bucket_name, img_object_key)\
+            .copy_from(CopySource={'Bucket': bucket_name, 'Key': img_object_key},
+                        MetadataDirective="REPLACE",
+                        ContentType="image/" + filename.split('.')[1])
+        s3.ObjectAcl(bucket_name, doc_object_key).put(ACL='public-read')
+        s3.ObjectAcl(bucket_name, img_object_key).put(ACL='public-read')
 
     except Exception as e:
         logging.error(e)
@@ -62,11 +85,12 @@ def result():
         print e
 
     else:
-        print current_time() + saving_key + ' was successfully uploaded to S3.'
+        print current_time() + doc_saving_key + ' was successfully uploaded to S3.'
 
     finally:
         print current_time() + 'The file s3_data will be closed.'
-        data.close()
+        data_doc.close()
+        data_img.close()
 
     return render_template("result.html", result = result)
 
