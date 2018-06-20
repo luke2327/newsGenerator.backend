@@ -1,4 +1,5 @@
-html/*.html
+html/*
+!html/README.md
 download/*
 !download/README.md
 *.pyc
