@@ -9,7 +9,6 @@ logging.basicConfig(filename='untitled.log', level=logging.INFO,
                    format='%(asctime)s - %(levelname)s - %(message)s',
                    datefmt='%Y-%m-%d %I:%M:%S %p')
 
-
 s3 = boto3.resource('s3')
 bucket_name = 'rbtest2'
 app = Flask(__name__)
@@ -22,7 +21,7 @@ def current_time():
     return '[' + str(datetime.datetime.now()).split('.')[0] + '] '
 
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+    return '.' in filename.lower() and filename.lower().rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 @app.route('/')
 def home():
@@ -33,22 +32,28 @@ def result():
     result = request.form
     file_s = request.files['image_link']
     filename = ''
-    if file_s and allowed_file(file_s.filename):
-        filename = secure_filename(file_s.filename)
-        file_s.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     d = datetime.datetime.now()
     news_name = str(d.year) + str(d.day) + str(d.hour) + str(d.minute) + str(d.second)
+    for key, value in result.iteritems():
+        print '[' + str(key.encode('utf-8')) + '] ' + str(value.encode('utf-8'))
+        logging.info('[' + str(key.encode('utf-8'))+ '] ' + str(value.encode('utf-8')))
+    if file_s and allowed_file(file_s.filename):
+        file_s.filename = news_name + '.' +\
+        file_s.filename.split('.')[1].lower()
+        filename = secure_filename(file_s.filename)
+        file_s.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     img_object_key = 'news/' + result.get('language_cd').lower() + '/image/' + filename
     img_saving_key = 'download/' + filename
     doc_object_key = 'news/' + result.get('language_cd').lower() + '/' + news_name + '.html'
     doc_saving_key = 'html/' + news_name + '.html'
     print current_time() + 'You have successfully entered.'
-    print current_time() + '[Defined data] language : ' + result.get('language_cd') + ', object_key : ' + doc_saving_key
+    print current_time() + '[Defined data] language : ' +\
+                            result.get('language_cd') + ', object_key : ' + doc_saving_key
 
     try:
         print current_time() + 'The file save_data will be opened.'
         save_data = open(doc_saving_key, 'w')
-        save_data.write(render_template("result.html", result = result).encode('utf-8'))
+        save_data.write(render_template("result.html", result = result, file_s = file_s).encode('utf-8'))
 
     except Exception as e:
         logging.error(e)
@@ -90,10 +95,8 @@ def result():
     finally:
         print current_time() + 'The file s3_data will be closed.'
         data_doc.close()
-        data_img.close()
 
-    return render_template("result.html", result = result)
-
+    return render_template("result.html", result = result, file_s = file_s)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

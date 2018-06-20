@@ -5,3 +5,4 @@ download/*
 *.pyc
 *.sock
 *.log
+*.swp
