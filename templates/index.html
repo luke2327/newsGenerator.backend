@@ -62,7 +62,7 @@
               <div class="fd-item">
               	<div>
               	  <div class="fd-1"><label for="id_date">Date</label></div>
-              	  <div class="fd-2"><input type="datetime-local" name="date" id="id_date" required></div>
+                  <div class="fd-2"><input type="datetime-local" name="date" id="id_date" value="<%= Time.now.strftime('%Y-%m-%dT%H:%M') %>" required></div>
               	</div>
               </div>
               <div>
