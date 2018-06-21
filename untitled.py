@@ -44,13 +44,11 @@ def result():
         print '[' + str(key.encode('utf-8')) + '] ' + str(value.encode('utf-8'))
         logging.info('[' + str(key.encode('utf-8'))+ '] ' + str(value.encode('utf-8')))
 
-
     if file_s and allowed_file(file_s.filename):
         file_s.filename = news_name + '.' +\
         file_s.filename.split('.')[1].lower()
         filename = secure_filename(file_s.filename)
         file_s.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-
 
     img_object_key = 'images/' + dirc_name + '/' + filename
     img_saving_key = 'download/' + filename
