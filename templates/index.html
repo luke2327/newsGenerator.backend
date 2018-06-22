@@ -2,19 +2,28 @@
   <head>
   <meta charset="utf-8">
   <title>Create news</title>
-  <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}"> -->
   <link rel="stylesheet" href="https://s3-ap-southeast-1.amazonaws.com/content.swips.co/static/index.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
-  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
   <link rel="shortcut icon" href="https://s3-ap-southeast-1.amazonaws.com/rbtest2/static/favicon/hero1_awake.png">
-  <script src="http://code.jquery.com/jquery-latest.min.js?v=1"></script>
-  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+  <script src="https://code.jquery.com/jquery-latest.min.js?v=1"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
   <script>
     $(document).ready(function(){
-        if($('[type="date"]').prop('type') != 'date'){
-            $('[type="date"]').datepicker();
+        if($('[type="datetime-local"]').prop('type') != 'datetime-local'){
+            $('[type="datetime-local"]').datepicker();
         }
+        function checkTime(i) {
+            return (i < 10) ? "0" + i : i;
+        }
+        var today = new Date(),
+            Y = today.getUTCFullYear(),
+            m = checkTime(today.getUTCMonth() + 1),
+            d = checkTime(today.getUTCDate()),
+            H = checkTime(today.getUTCHours()),
+            M = checkTime(today.getUTCMinutes());
+        document.getElementById("id_date").value = Y+'-'+m+'-'+d+'T'+H+':'+M+':00'
     });
   </script>
 </head>
@@ -62,7 +71,7 @@
               <div class="fd-item">
               	<div>
               	  <div class="fd-1"><label for="id_date">Date</label></div>
-                  <div class="fd-2"><input type="datetime-local" name="date" id="id_date" value="<%= Time.now.strftime('%Y-%m-%dT%H:%M') %>" required></div>
+                  <div class="fd-2"><input type="datetime-local" name="date" id="id_date" required></div>
               	</div>
               </div>
               <div>

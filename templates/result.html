@@ -5,8 +5,13 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, user-scalable=no">
   <meta property="og:title" content="{{ result.title }}">
+  <meta property="og:description" content="{% for s in result.content.split('\n')[0:2] %}{{ s }}{% endfor %}">
   <meta property="og:image" content="https://s3-ap-southeast-1.amazonaws.com/content.swips.co/images/{{ file_s.filename }}">
-  <meta property="og:type" content="news">
+  <meta property="og:image:type" content="image/{{ file_s.filename.split('.')[1] }}">
+  <meta property="og:image:alt" content="news_image">
+  <meta property="og:site_name" content="SWIPS">
+  <meta property="og:article:published_time" content="{{ result.date+'+00:00' }}">
+  <meta property="og:type" content="article">
   <meta property="og:url" content="https://s3-ap-southeast-1.amazonaws.com/content.swips.co/news/{{ file_s.filename.split('.')[0] + '.html' }}">
   <meta property="og:description" content="SWIPS - News content">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
@@ -49,7 +54,7 @@
     </div>
     <ul class="ct-pub_date rel">
       <li class="pub_date-img_div">
-        <img src="https://static.swips.co/content/static/img/news_icon.png" alt="news" class="pub_date-img rel">
+        <img src="http://static.swips.co/content/static/img/news_icon.png" alt="news" class="pub_date-img rel">
       </li>
       <li class="pub_date-creator">
         <div>
